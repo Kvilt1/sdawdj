@@ -9,6 +9,7 @@ This script:
    - Missing 'times' symbols (should be \times)
    - Missing spaces between equations and text
    - Other formatting issues that cause rendering problems
+   - Unit formatting issues with superscripts
 
 Usage:
     python3 apply_headings_and_fix_equations.py [--input INPUT] [--names NAMES] [--output OUTPUT]
@@ -106,6 +107,21 @@ def fix_equations(content):
     # Fix other common LaTeX errors or inconsistencies
     fixed_content = fixed_content.replace(r'\text{kg} \cdot \text{m/s}', r'\text{kg} \cdot \text{m/s}')
     
+    # Properly format commonly problematic units
+    # Fix kW/m^2 pattern
+    fixed_content = fixed_content.replace(r'\text{kW/m}^2', r'\text{kW/m}^{2}')
+    
+    # Fix general unit formatting with superscripts
+    unit_pattern = r'\\text\{([^}]+)\}\^(\d+)'
+    unit_replacement = r'\\text{\1}^{\2}'
+    fixed_content = re.sub(unit_pattern, unit_replacement, fixed_content)
+    
+    # Ensure proper brace formatting for all superscripts and subscripts
+    fixed_content = re.sub(r'([_^])(\d+)([^{]|$)', r'\1{\2}\3', fixed_content)
+    
+    # Fix spacing in inline equations with units
+    fixed_content = re.sub(r'(\d+)\\text', r'\1 \\text', fixed_content)
+    
     # Ensure spaces between text and inline equations
     # Fix: text$equation$ -> text $equation$
     fixed_content = re.sub(r'([a-zA-Z0-9,.;:])(\$[^$]+\$)', r'\1 \2', fixed_content)
@@ -116,6 +132,9 @@ def fix_equations(content):
     inline_pattern = r'\$\s+(.*?)\s+\$'
     inline_replacement = r'$\1$'
     fixed_content = re.sub(inline_pattern, inline_replacement, fixed_content)
+    
+    # Remove trailing spaces inside inline equations
+    fixed_content = re.sub(r'\$([^$]*?)\s+\$', r'$\1$', fixed_content)
     
     # Fix missing line breaks before and after block equations
     # Before: text$$ -> text\n\n$$
@@ -136,6 +155,9 @@ def fix_equations(content):
         return f"$$\n{eq}\n$$"
     
     fixed_content = re.sub(equations_pattern, add_newlines_to_equation, fixed_content, flags=re.DOTALL)
+    
+    # Special case for division in text mode
+    fixed_content = fixed_content.replace(r'\text{kW/m}', r'\text{kW/m}')
     
     return fixed_content
 
