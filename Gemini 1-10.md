@@ -1,4 +1,3 @@
-```markdown
 # Physics Assignment Solutions
 
 *This document contains solutions to all physics assignments.*
@@ -4034,4 +4033,4 @@ $$ \dot{m} \approx 0.001179 \text{ kg/s} $$
 The mass of liquid nitrogen supplied per second is approximately $0.00118 \text{ kg/s}$ (or 1.18 g/s). *(Note: This result differs significantly from the original solution's 1.58 kg/s, suggesting a possible error in the original numbers or calculation, perhaps in units of L or c_p)*.
 
 ---
-```
+
